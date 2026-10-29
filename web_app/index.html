@@ -2,188 +2,703 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Blog Generator</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BlogBloom | AI Writing Studio</title>
+<style>
+:root {
+  --pink: #e54d97;
+  --pink-dark: #c9367c;
+  --text: #512441;
+  --muted: #95647d;
+  --surface: #ffffff;
+  --background: #fff0f7;
+  --border: #f4c3d9;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+* { box-sizing: border-box; }
 
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #fff0f6, #ffd6e8);
-      margin: 0;
-      padding: 50px 20px;
-      min-height: 100vh;
-      color: #4a2340;
-    }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #fff3f8, #f8dce9);
+  color: var(--text);
+  min-height: 100vh;
+}
 
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 40px;
-      border-radius: 22px;
-      box-shadow: 0 8px 30px #f5c4dc;
-    }
+body.dark {
+  --text: #ffe7f2;
+  --muted: #e0b2cc;
+  --surface: #352235;
+  --background: #251624;
+  --border: #80516e;
+  background: #251624;
+}
 
-    h1 {
-      color: #e75498;
-      text-align: center;
-      font-size: 34px;
-    }
+nav {
+  background: var(--surface);
+  padding: 20px 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 3px 15px #e54d9720;
+}
 
-    .subtitle {
-      text-align: center;
-      color: #865773;
-      margin-bottom: 30px;
-    }
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--pink);
+}
 
-    label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
+nav p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
 
-    input {
-      width: 100%;
-      padding: 15px;
-      border: 2px solid #f8bbd0;
-      border-radius: 12px;
-      font-size: 16px;
-      outline-color: #e75498;
-    }
+main {
+  max-width: 1080px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
 
-    button {
-      width: 100%;
-      margin-top: 18px;
-      padding: 15px;
-      background: #e75498;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 17px;
-      font-weight: bold;
-      transition: background 0.2s;
-    }
+.hero {
+  text-align: center;
+  margin-bottom: 35px;
+}
 
-    button:hover {
-      background: #c9367c;
-    }
+.hero h1 {
+  font-size: clamp(30px, 5vw, 46px);
+  margin-bottom: 12px;
+}
 
-    button:disabled {
-      opacity: 0.6;
-      cursor: wait;
-    }
+.hero h1 span { color: var(--pink); }
 
-    #result {
-      margin-top: 30px;
-      padding: 20px;
-      background: #fff5fa;
-      border-radius: 12px;
-      border: 1px solid #f8bbd0;
-      white-space: pre-wrap;
-      line-height: 1.7;
-      overflow-wrap: anywhere;
-      display: none;
-    }
+.hero p {
+  color: var(--muted);
+  line-height: 1.7;
+}
 
-    .footer {
-      text-align: center;
-      margin-top: 30px;
-      font-size: 13px;
-      color: #865773;
-    }
+.card {
+  background: var(--surface);
+  border-radius: 22px;
+  padding: 30px;
+  margin-bottom: 25px;
+  box-shadow: 0 12px 35px #db7da32b;
+}
 
-    @media (max-width: 600px) {
-      .container {
-        padding: 25px;
-      }
+.card h2 { margin-top: 0; }
 
-      h1 {
-        font-size: 27px;
-      }
-    }
-  </style>
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+input, select {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-size: 15px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--pink);
+}
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-top: 22px;
+}
+
+.examples { margin: 20px 0; }
+
+button { cursor: pointer; font-family: inherit; }
+
+.chip {
+  display: inline-block;
+  border: 1px solid var(--border);
+  background: var(--background);
+  border-radius: 22px;
+  padding: 10px 14px;
+  margin: 6px 6px 0 0;
+  color: var(--pink-dark);
+}
+
+.primary {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  background: var(--pink);
+  color: white;
+  padding: 17px;
+  font-size: 17px;
+  font-weight: bold;
+  margin-top: 24px;
+}
+
+.primary:hover { background: var(--pink-dark); }
+.primary:disabled { opacity: .65; cursor: wait; }
+
+.secondary {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 15px;
+  color: var(--text);
+  font-weight: bold;
+}
+
+.secondary:hover { border-color: var(--pink); }
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.stat {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 22px;
+  text-align: center;
+}
+
+.stat strong {
+  display: block;
+  color: var(--pink);
+  font-size: 26px;
+  margin-bottom: 8px;
+}
+
+.stat small { color: var(--muted); }
+
+#status {
+  color: var(--pink-dark);
+  line-height: 1.6;
+}
+
+#result {
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+#result h1, #result h2, #result h3 {
+  color: var(--pink-dark);
+  line-height: 1.3;
+}
+
+#result li { margin: 8px 0; }
+
+#result[contenteditable="true"] {
+  outline: 2px dashed var(--pink);
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.history-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 12px;
+  background: var(--background);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.history-item strong { display: block; }
+.history-item small { color: var(--muted); }
+
+.history-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hidden { display: none !important; }
+
+footer {
+  text-align: center;
+  padding: 30px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media(max-width: 650px) {
+  .options, .stats { grid-template-columns: 1fr; }
+  .card { padding: 20px; }
+  nav { flex-wrap: wrap; }
+  .history-item { flex-direction: column; align-items: stretch; }
+}
+
+@media print {
+  nav, .hero, #generatorCard, #historyCard,
+  .stats, .toolbar, footer, #outputHeading {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  main { margin: 0; padding: 0; }
+  .card { box-shadow: none; padding: 0; }
+  #result, #result * { color: black !important; }
+}
+</style>
 </head>
 
 <body>
-  <main class="container">
+<nav>
+  <div class="logo">💗 BlogBloom</div>
+  <p>AI-Powered Writing Studio ✨</p>
+  <button class="secondary" onclick="toggleDarkMode()" id="themeButton">
+    🌙 Dark Mode
+  </button>
+</nav>
 
-    <h1>💗 AI Blog Generator</h1>
+<main>
+  <section class="hero">
+    <h1>Create something <span>amazing.</span> ✨</h1>
+    <p>Transform your ideas into blog posts with your own team of AI agents.</p>
+  </section>
 
-    <p class="subtitle">
-      Transform your ideas into blog posts with AI ✨
-    </p>
+  <section class="card" id="generatorCard">
+    <h2>✨ Create Your Blog</h2>
 
     <label for="topic">What would you like to write about?</label>
+    <input id="topic" placeholder="e.g. Cybersecurity for College Students">
 
-    <input
-      type="text"
-      id="topic"
-      placeholder="Example: Cybersecurity for College Students"
-    >
+    <div class="examples">
+      <small>Need inspiration? Try a topic:</small><br>
+      <button class="chip" onclick="setTopic('Cybersecurity for College Students')">🔐 Cybersecurity</button>
+      <button class="chip" onclick="setTopic('Artificial Intelligence in Education')">🤖 AI & Education</button>
+      <button class="chip" onclick="setTopic('Healthy Habits for Busy Students')">🌿 Student Wellness</button>
+      <button class="chip" onclick="setTopic('The Future of Technology')">💻 Technology</button>
+    </div>
 
-    <button id="generate" onclick="generateBlog()">
+    <div class="options">
+      <div>
+        <label for="tone">Writing Tone</label>
+        <select id="tone">
+          <option>Professional</option>
+          <option>Casual</option>
+          <option>Educational</option>
+          <option>Creative</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="length">Blog Length</label>
+        <select id="length">
+          <option>Short</option>
+          <option selected>Medium</option>
+          <option>Long</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="audience">Target Audience</label>
+        <select id="audience">
+          <option>General Readers</option>
+          <option>College Students</option>
+          <option>Professionals</option>
+          <option>Beginners</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="primary" id="generate" onclick="generateBlog()">
       ✨ Generate My Blog
     </button>
 
-    <div id="result" aria-live="polite"></div>
+    <p id="status" role="status" aria-live="polite"></p>
+  </section>
 
-    <p class="footer">
-      Powered by Google Gemini AI and Python FastAPI
-    </p>
+  <section id="outputSection" class="hidden">
+    <div class="stats">
+      <div class="stat">
+        <strong id="wordCount">0</strong>
+        <small>Words Written</small>
+      </div>
+      <div class="stat">
+        <strong id="readTime">0 min</strong>
+        <small>Reading Time</small>
+      </div>
+      <div class="stat">
+        <strong>5</strong>
+        <small>AI Agent Roles</small>
+      </div>
+    </div>
 
-  </main>
+    <div class="card">
+      <h2 id="outputHeading">📝 Your Generated Blog</h2>
 
-  <script>
-    async function generateBlog() {
-      const topic = document.getElementById("topic").value.trim();
-      const result = document.getElementById("result");
-      const button = document.getElementById("generate");
+      <div class="toolbar">
+        <button class="secondary" onclick="copyBlog()">📋 Copy</button>
+        <button class="secondary" onclick="downloadBlog()">⬇ Download</button>
+        <button class="secondary" onclick="savePDF()">📄 Save PDF</button>
+        <button class="secondary" onclick="toggleEdit()" id="editButton">✏️ Edit</button>
+        <button class="secondary" onclick="generateBlog()">🔄 Regenerate</button>
+      </div>
 
-      result.style.display = "block";
+      <article id="result"></article>
+    </div>
+  </section>
 
-      if (!topic) {
-        result.textContent = "💗 Please enter a blog topic!";
-        return;
-      }
+  <section class="card" id="historyCard">
+    <h2>📚 My Blog Library</h2>
+    <p>Find and reopen your recently generated articles.</p>
 
-      button.disabled = true;
-      button.textContent = "Generating... ✨";
+    <input
+      id="historySearch"
+      placeholder="🔍 Search your saved blogs..."
+      oninput="showHistory()"
+    >
 
-      result.textContent =
-        "✨ Your AI agents are creating your blog post. Please wait...";
+    <div id="historyList"></div>
 
-      try {
-        const response = await fetch("/generate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ topic: topic })
-        });
+    <div class="toolbar">
+      <button class="secondary" onclick="clearHistory()">
+        🗑️ Clear History
+      </button>
+    </div>
 
-        const data = await response.json();
+    <small>Saved locally in this browser. Your history is not synced between devices.</small>
+  </section>
+</main>
 
-        if (!response.ok) {
-          throw new Error(data.detail || "Generation failed.");
-        }
+<footer>
+  Made with 💗 | Python FastAPI + Google Gemini + Google ADK
+</footer>
 
-        result.textContent = data.blog;
+<script>
+let blogText = "";
+let editing = false;
+const historyKey = "blogbloom_history";
 
-      } catch (error) {
-        result.textContent =
-          "Something went wrong: " + error.message;
+function setTopic(value) {
+  document.getElementById("topic").value = value;
+}
 
-      } finally {
-        button.disabled = false;
-        button.textContent = "✨ Generate My Blog";
-      }
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function renderMarkdown(text) {
+  const inline = value =>
+    escapeHtml(value).replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+  let html = "";
+  let inList = false;
+
+  for (const line of text.split("\n")) {
+    const trimmed = line.trim();
+    const isList = /^[-*]\s/.test(trimmed);
+
+    if (inList && !isList) {
+      html += "</ul>";
+      inList = false;
     }
-  </script>
+
+    if (!trimmed) continue;
+
+    if (trimmed.startsWith("### ")) {
+      html += "<h3>" + inline(trimmed.slice(4)) + "</h3>";
+    } else if (trimmed.startsWith("## ")) {
+      html += "<h2>" + inline(trimmed.slice(3)) + "</h2>";
+    } else if (trimmed.startsWith("# ")) {
+      html += "<h1>" + inline(trimmed.slice(2)) + "</h1>";
+    } else if (isList) {
+      if (!inList) {
+        html += "<ul>";
+        inList = true;
+      }
+      html += "<li>" + inline(trimmed.slice(2)) + "</li>";
+    } else {
+      html += "<p>" + inline(trimmed) + "</p>";
+    }
+  }
+
+  if (inList) html += "</ul>";
+  return html;
+}
+
+function updateStats() {
+  const words = blogText.trim()
+    ? blogText.trim().split(/\s+/).length
+    : 0;
+
+  document.getElementById("wordCount").textContent = words;
+  document.getElementById("readTime").textContent =
+    Math.max(1, Math.ceil(words / 200)) + " min";
+}
+
+function showBlog(content) {
+  blogText = content;
+  editing = false;
+
+  const result = document.getElementById("result");
+  result.contentEditable = "false";
+  result.innerHTML = renderMarkdown(blogText);
+
+  document.getElementById("editButton").textContent = "✏️ Edit";
+  document.getElementById("outputSection").classList.remove("hidden");
+
+  updateStats();
+}
+
+async function generateBlog() {
+  const topic = document.getElementById("topic").value.trim();
+  const tone = document.getElementById("tone").value;
+  const length = document.getElementById("length").value;
+  const audience = document.getElementById("audience").value;
+
+  const button = document.getElementById("generate");
+  const status = document.getElementById("status");
+
+  if (!topic) {
+    status.textContent = "Please enter a blog topic first!";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "✨ Generating...";
+  status.textContent =
+    "🤖 Your AI agents are planning, validating, and writing. Please wait...";
+
+  try {
+    const response = await fetch("/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        topic:
+          `${topic}. Write in a ${tone.toLowerCase()} tone ` +
+          `for ${audience.toLowerCase()}. ` +
+          `Use a ${length.toLowerCase()} blog length.`
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.detail || "Generation failed.");
+    }
+
+    if (!data.blog) {
+      throw new Error("The AI did not return a blog.");
+    }
+
+    showBlog(data.blog);
+    saveToHistory(topic, data.blog);
+
+    status.textContent = "🎉 Your blog is ready!";
+    document.getElementById("outputSection")
+      .scrollIntoView({ behavior: "smooth" });
+
+  } catch (error) {
+    status.textContent = "Error: " + error.message;
+  } finally {
+    button.disabled = false;
+    button.textContent = "✨ Generate My Blog";
+  }
+}
+
+async function copyBlog() {
+  if (!blogText) return;
+
+  try {
+    await navigator.clipboard.writeText(blogText);
+    document.getElementById("status").textContent =
+      "📋 Blog copied to clipboard!";
+  } catch {
+    alert("Copy failed. Please select the article manually.");
+  }
+}
+
+function downloadBlog() {
+  if (!blogText) return;
+
+  const blob = new Blob([blogText], {
+    type: "text/plain;charset=utf-8"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "blogbloom-article.txt";
+  link.click();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function savePDF() {
+  if (!blogText) {
+    alert("Generate a blog first!");
+    return;
+  }
+
+  window.print();
+}
+
+function toggleEdit() {
+  if (!blogText) return;
+
+  const result = document.getElementById("result");
+  const button = document.getElementById("editButton");
+
+  editing = !editing;
+  result.contentEditable = editing ? "true" : "false";
+
+  if (editing) {
+    button.textContent = "💾 Save Edits";
+    result.focus();
+  } else {
+    blogText = result.innerText;
+    updateStats();
+    button.textContent = "✏️ Edit";
+    document.getElementById("status").textContent =
+      "💾 Your edits are saved for this session.";
+  }
+}
+
+function toggleDarkMode() {
+  const dark = document.body.classList.toggle("dark");
+
+  document.getElementById("themeButton").textContent =
+    dark ? "☀️ Light Mode" : "🌙 Dark Mode";
+
+  localStorage.setItem("blogbloom_theme", dark ? "dark" : "light");
+}
+
+function getHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(historyKey) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveToHistory(topic, content) {
+  const history = getHistory();
+
+  history.unshift({
+    topic,
+    content,
+    date: new Date().toLocaleString()
+  });
+
+  try {
+    localStorage.setItem(
+      historyKey,
+      JSON.stringify(history.slice(0, 10))
+    );
+  } catch {
+    document.getElementById("status").textContent =
+      "Blog generated, but browser storage is full.";
+  }
+
+  showHistory();
+}
+
+function showHistory() {
+  const history = getHistory();
+  const search = document.getElementById("historySearch")
+    .value.toLowerCase();
+
+  const list = document.getElementById("historyList");
+  list.replaceChildren();
+
+  const matches = history
+    .map((blog, index) => ({ ...blog, index }))
+    .filter(blog => blog.topic.toLowerCase().includes(search));
+
+  if (!matches.length) {
+    const message = document.createElement("p");
+    message.textContent = "No saved blogs found yet.";
+    list.appendChild(message);
+    return;
+  }
+
+  matches.forEach(blog => {
+    const item = document.createElement("div");
+    item.className = "history-item";
+
+    const details = document.createElement("div");
+    const title = document.createElement("strong");
+    const date = document.createElement("small");
+
+    title.textContent = blog.topic;
+    date.textContent = blog.date;
+
+    details.append(title, date);
+
+    const actions = document.createElement("div");
+    actions.className = "history-actions";
+
+    const openButton = document.createElement("button");
+    openButton.className = "secondary";
+    openButton.textContent = "📖 Open";
+
+    openButton.onclick = () => {
+      document.getElementById("topic").value = blog.topic;
+      showBlog(blog.content);
+      document.getElementById("outputSection")
+        .scrollIntoView({ behavior: "smooth" });
+    };
+
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "secondary";
+    deleteButton.textContent = "🗑️ Delete";
+
+    deleteButton.onclick = () => {
+      const history = getHistory();
+      history.splice(blog.index, 1);
+      localStorage.setItem(historyKey, JSON.stringify(history));
+      showHistory();
+    };
+
+    actions.append(openButton, deleteButton);
+    item.append(details, actions);
+    list.appendChild(item);
+  });
+}
+
+function clearHistory() {
+  if (!confirm("Delete all saved blogs from this browser?")) return;
+
+  localStorage.removeItem(historyKey);
+  showHistory();
+}
+
+if (localStorage.getItem("blogbloom_theme") === "dark") {
+  document.body.classList.add("dark");
+  document.getElementById("themeButton").textContent = "☀️ Light Mode";
+}
+
+showHistory();
+</script>
 </body>
 </html>
