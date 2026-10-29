@@ -2,703 +2,1192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BlogBloom | AI Writing Studio</title>
-<style>
-:root {
-  --pink: #e54d97;
-  --pink-dark: #c9367c;
-  --text: #512441;
-  --muted: #95647d;
-  --surface: #ffffff;
-  --background: #fff0f7;
-  --border: #f4c3d9;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #fff3f8, #f8dce9);
-  color: var(--text);
-  min-height: 100vh;
-}
-
-body.dark {
-  --text: #ffe7f2;
-  --muted: #e0b2cc;
-  --surface: #352235;
-  --background: #251624;
-  --border: #80516e;
-  background: #251624;
-}
-
-nav {
-  background: var(--surface);
-  padding: 20px 6%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
-  box-shadow: 0 3px 15px #e54d9720;
-}
-
-.logo {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--pink);
-}
-
-nav p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-main {
-  max-width: 1080px;
-  margin: 40px auto;
-  padding: 0 20px;
-}
-
-.hero {
-  text-align: center;
-  margin-bottom: 35px;
-}
-
-.hero h1 {
-  font-size: clamp(30px, 5vw, 46px);
-  margin-bottom: 12px;
-}
-
-.hero h1 span { color: var(--pink); }
-
-.hero p {
-  color: var(--muted);
-  line-height: 1.7;
-}
-
-.card {
-  background: var(--surface);
-  border-radius: 22px;
-  padding: 30px;
-  margin-bottom: 25px;
-  box-shadow: 0 12px 35px #db7da32b;
-}
-
-.card h2 { margin-top: 0; }
-
-label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-input, select {
-  width: 100%;
-  padding: 14px;
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  font-size: 15px;
-  background: var(--surface);
-  color: var(--text);
-}
-
-input:focus, select:focus {
-  outline: none;
-  border-color: var(--pink);
-}
-
-.options {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-  margin-top: 22px;
-}
-
-.examples { margin: 20px 0; }
-
-button { cursor: pointer; font-family: inherit; }
-
-.chip {
-  display: inline-block;
-  border: 1px solid var(--border);
-  background: var(--background);
-  border-radius: 22px;
-  padding: 10px 14px;
-  margin: 6px 6px 0 0;
-  color: var(--pink-dark);
-}
-
-.primary {
-  width: 100%;
-  border: none;
-  border-radius: 12px;
-  background: var(--pink);
-  color: white;
-  padding: 17px;
-  font-size: 17px;
-  font-weight: bold;
-  margin-top: 24px;
-}
-
-.primary:hover { background: var(--pink-dark); }
-.primary:disabled { opacity: .65; cursor: wait; }
-
-.secondary {
-  background: var(--background);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 11px 15px;
-  color: var(--text);
-  font-weight: bold;
-}
-
-.secondary:hover { border-color: var(--pink); }
-
-.toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 18px 0;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-  margin-bottom: 25px;
-}
-
-.stat {
-  background: var(--surface);
-  border-radius: 16px;
-  padding: 22px;
-  text-align: center;
-}
-
-.stat strong {
-  display: block;
-  color: var(--pink);
-  font-size: 26px;
-  margin-bottom: 8px;
-}
-
-.stat small { color: var(--muted); }
-
-#status {
-  color: var(--pink-dark);
-  line-height: 1.6;
-}
-
-#result {
-  line-height: 1.8;
-  overflow-wrap: anywhere;
-}
-
-#result h1, #result h2, #result h3 {
-  color: var(--pink-dark);
-  line-height: 1.3;
-}
-
-#result li { margin: 8px 0; }
-
-#result[contenteditable="true"] {
-  outline: 2px dashed var(--pink);
-  padding: 15px;
-  border-radius: 12px;
-}
-
-.history-item {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 15px;
-  margin-top: 12px;
-  background: var(--background);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.history-item strong { display: block; }
-.history-item small { color: var(--muted); }
-
-.history-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.hidden { display: none !important; }
-
-footer {
-  text-align: center;
-  padding: 30px;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-@media(max-width: 650px) {
-  .options, .stats { grid-template-columns: 1fr; }
-  .card { padding: 20px; }
-  nav { flex-wrap: wrap; }
-  .history-item { flex-direction: column; align-items: stretch; }
-}
-
-@media print {
-  nav, .hero, #generatorCard, #historyCard,
-  .stats, .toolbar, footer, #outputHeading {
-    display: none !important;
-  }
-
-  body {
-    background: white !important;
-    color: black !important;
-  }
-
-  main { margin: 0; padding: 0; }
-  .card { box-shadow: none; padding: 0; }
-  #result, #result * { color: black !important; }
-}
-</style>
-</head>
-
-<body>
-<nav>
-  <div class="logo">💗 BlogBloom</div>
-  <p>AI-Powered Writing Studio ✨</p>
-  <button class="secondary" onclick="toggleDarkMode()" id="themeButton">
-    🌙 Dark Mode
-  </button>
-</nav>
-
-<main>
-  <section class="hero">
-    <h1>Create something <span>amazing.</span> ✨</h1>
-    <p>Transform your ideas into blog posts with your own team of AI agents.</p>
-  </section>
-
-  <section class="card" id="generatorCard">
-    <h2>✨ Create Your Blog</h2>
-
-    <label for="topic">What would you like to write about?</label>
-    <input id="topic" placeholder="e.g. Cybersecurity for College Students">
-
-    <div class="examples">
-      <small>Need inspiration? Try a topic:</small><br>
-      <button class="chip" onclick="setTopic('Cybersecurity for College Students')">🔐 Cybersecurity</button>
-      <button class="chip" onclick="setTopic('Artificial Intelligence in Education')">🤖 AI & Education</button>
-      <button class="chip" onclick="setTopic('Healthy Habits for Busy Students')">🌿 Student Wellness</button>
-      <button class="chip" onclick="setTopic('The Future of Technology')">💻 Technology</button>
-    </div>
-
-    <div class="options">
-      <div>
-        <label for="tone">Writing Tone</label>
-        <select id="tone">
-          <option>Professional</option>
-          <option>Casual</option>
-          <option>Educational</option>
-          <option>Creative</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="length">Blog Length</label>
-        <select id="length">
-          <option>Short</option>
-          <option selected>Medium</option>
-          <option>Long</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="audience">Target Audience</label>
-        <select id="audience">
-          <option>General Readers</option>
-          <option>College Students</option>
-          <option>Professionals</option>
-          <option>Beginners</option>
-        </select>
-      </div>
-    </div>
-
-    <button class="primary" id="generate" onclick="generateBlog()">
-      ✨ Generate My Blog
-    </button>
-
-    <p id="status" role="status" aria-live="polite"></p>
-  </section>
-
-  <section id="outputSection" class="hidden">
-    <div class="stats">
-      <div class="stat">
-        <strong id="wordCount">0</strong>
-        <small>Words Written</small>
-      </div>
-      <div class="stat">
-        <strong id="readTime">0 min</strong>
-        <small>Reading Time</small>
-      </div>
-      <div class="stat">
-        <strong>5</strong>
-        <small>AI Agent Roles</small>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2 id="outputHeading">📝 Your Generated Blog</h2>
-
-      <div class="toolbar">
-        <button class="secondary" onclick="copyBlog()">📋 Copy</button>
-        <button class="secondary" onclick="downloadBlog()">⬇ Download</button>
-        <button class="secondary" onclick="savePDF()">📄 Save PDF</button>
-        <button class="secondary" onclick="toggleEdit()" id="editButton">✏️ Edit</button>
-        <button class="secondary" onclick="generateBlog()">🔄 Regenerate</button>
-      </div>
-
-      <article id="result"></article>
-    </div>
-  </section>
-
-  <section class="card" id="historyCard">
-    <h2>📚 My Blog Library</h2>
-    <p>Find and reopen your recently generated articles.</p>
-
-    <input
-      id="historySearch"
-      placeholder="🔍 Search your saved blogs..."
-      oninput="showHistory()"
-    >
-
-    <div id="historyList"></div>
-
-    <div class="toolbar">
-      <button class="secondary" onclick="clearHistory()">
-        🗑️ Clear History
-      </button>
-    </div>
-
-    <small>Saved locally in this browser. Your history is not synced between devices.</small>
-  </section>
-</main>
-
-<footer>
-  Made with 💗 | Python FastAPI + Google Gemini + Google ADK
-</footer>
-
-<script>
-let blogText = "";
-let editing = false;
-const historyKey = "blogbloom_history";
-
-function setTopic(value) {
-  document.getElementById("topic").value = value;
-}
-
-function escapeHtml(text) {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-function renderMarkdown(text) {
-  const inline = value =>
-    escapeHtml(value).replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-
-  let html = "";
-  let inList = false;
-
-  for (const line of text.split("\n")) {
-    const trimmed = line.trim();
-    const isList = /^[-*]\s/.test(trimmed);
-
-    if (inList && !isList) {
-      html += "</ul>";
-      inList = false;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BlogBloom | AI Writing Studio</title>
+  <style>
+    :root {
+      --pink: #e84393;
+      --pink-dark: #c72f77;
+      --pink-light: #fff0f7;
+      --background: #fff7fb;
+      --surface: #ffffff;
+      --text: #37243a;
+      --muted: #816b80;
+      --border: #f0dce8;
+      --shadow: 0 10px 35px rgba(102, 39, 78, .07);
     }
 
-    if (!trimmed) continue;
+    * { box-sizing: border-box; }
 
-    if (trimmed.startsWith("### ")) {
-      html += "<h3>" + inline(trimmed.slice(4)) + "</h3>";
-    } else if (trimmed.startsWith("## ")) {
-      html += "<h2>" + inline(trimmed.slice(3)) + "</h2>";
-    } else if (trimmed.startsWith("# ")) {
-      html += "<h1>" + inline(trimmed.slice(2)) + "</h1>";
-    } else if (isList) {
-      if (!inList) {
-        html += "<ul>";
-        inList = true;
+    body {
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--background);
+      color: var(--text);
+    }
+
+    body.dark {
+      --background: #191620;
+      --surface: #26212e;
+      --text: #f8eff8;
+      --muted: #c2aec0;
+      --border: #45374b;
+      --pink-light: #382538;
+      --shadow: 0 10px 35px rgba(0,0,0,.15);
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 28px 17px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: 800;
+      color: var(--pink);
+      letter-spacing: -.8px;
+      padding: 0 10px;
+    }
+
+    .logo small {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0;
+      margin: 5px 0 0 34px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav button {
+      text-align: left;
+      background: transparent;
+      border: 0;
+      padding: 14px;
+      border-radius: 12px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      background: var(--pink-light);
+      color: var(--pink-dark);
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      background: var(--pink-light);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 18px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .sidebar-bottom strong {
+      color: var(--pink);
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 22px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .topbar h1 {
+      font-size: 23px;
+      margin: 0 0 5px;
+    }
+
+    .topbar p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      white-space: nowrap;
+    }
+
+    .theme-btn {
+      background: var(--pink-light);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 9px 13px;
+      color: var(--text);
+    }
+
+    .avatar {
+      background: #f7b4d4;
+      color: #922456;
+      width: 37px;
+      height: 37px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+    }
+
+    .content {
+      max-width: 1500px;
+      margin: auto;
+      padding: 28px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 15px;
+      margin-bottom: 22px;
+    }
+
+    .stat, .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat {
+      padding: 20px;
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 13px;
+      background: var(--pink-light);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 24px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 290px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .primary {
+      min-width: 0;
+      display: grid;
+      gap: 18px;
+    }
+
+    .right {
+      display: grid;
+      gap: 18px;
+    }
+
+    .panel {
+      padding: 25px;
+    }
+
+    .panel h2 {
+      margin: 0 0 22px;
+      font-size: 23px;
+    }
+
+    .panel h3 {
+      margin: 0 0 15px;
+      font-size: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 9px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 14px;
+      color: var(--text);
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 3px rgba(232,67,147,.10);
+    }
+
+    .helper {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 12px 0 9px;
+    }
+
+    .topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-bottom: 24px;
+    }
+
+    .topic {
+      border: 1px solid #f5c5db;
+      background: var(--pink-light);
+      color: var(--pink-dark);
+      padding: 9px 13px;
+      border-radius: 25px;
+      font-size: 12px;
+    }
+
+    .topic:hover {
+      border-color: var(--pink);
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 13px;
+      margin-bottom: 20px;
+    }
+
+    .primary-btn {
+      width: 100%;
+      background: var(--pink);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      padding: 16px;
+      font-weight: 800;
+      transition: background .2s;
+    }
+
+    .primary-btn:hover {
+      background: var(--pink-dark);
+    }
+
+    .secondary-btn {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 11px 13px;
+      font-weight: 600;
+    }
+
+    .secondary-btn:hover {
+      background: var(--pink-light);
+    }
+
+    .action-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .action-list button {
+      width: 100%;
+      text-align: left;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 12px;
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .action-list button:hover {
+      background: var(--pink-light);
+    }
+
+    .library-search {
+      margin-bottom: 12px;
+    }
+
+    .library-item {
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .library-item:last-child {
+      border-bottom: 0;
+    }
+
+    .library-item strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .library-item small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .library-item:hover strong {
+      color: var(--pink);
+    }
+
+    .empty {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 18px;
+    }
+
+    .preview-header h2 {
+      margin: 0;
+    }
+
+    .preview-meta {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .article {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.8;
+      font-size: 14px;
+      min-height: 120px;
+    }
+
+    .article:focus {
+      outline: 2px solid var(--pink);
+      outline-offset: 8px;
+      border-radius: 5px;
+    }
+
+    .preview-tools {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .notice {
+      display: none;
+      margin-top: 15px;
+      border-radius: 10px;
+      background: var(--pink-light);
+      padding: 13px;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .notice.show {
+      display: block;
+    }
+
+    .step-label {
+      color: var(--pink);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 25px;
+    }
+
+    @media (max-width: 1150px) {
+      .workspace {
+        grid-template-columns: 1fr;
       }
-      html += "<li>" + inline(trimmed.slice(2)) + "</li>";
-    } else {
-      html += "<p>" + inline(trimmed) + "</p>";
-    }
-  }
 
-  if (inList) html += "</ul>";
-  return html;
-}
+      .right {
+        grid-template-columns: 1fr 1fr;
+      }
 
-function updateStats() {
-  const words = blogText.trim()
-    ? blogText.trim().split(/\s+/).length
-    : 0;
-
-  document.getElementById("wordCount").textContent = words;
-  document.getElementById("readTime").textContent =
-    Math.max(1, Math.ceil(words / 200)) + " min";
-}
-
-function showBlog(content) {
-  blogText = content;
-  editing = false;
-
-  const result = document.getElementById("result");
-  result.contentEditable = "false";
-  result.innerHTML = renderMarkdown(blogText);
-
-  document.getElementById("editButton").textContent = "✏️ Edit";
-  document.getElementById("outputSection").classList.remove("hidden");
-
-  updateStats();
-}
-
-async function generateBlog() {
-  const topic = document.getElementById("topic").value.trim();
-  const tone = document.getElementById("tone").value;
-  const length = document.getElementById("length").value;
-  const audience = document.getElementById("audience").value;
-
-  const button = document.getElementById("generate");
-  const status = document.getElementById("status");
-
-  if (!topic) {
-    status.textContent = "Please enter a blog topic first!";
-    return;
-  }
-
-  button.disabled = true;
-  button.textContent = "✨ Generating...";
-  status.textContent =
-    "🤖 Your AI agents are planning, validating, and writing. Please wait...";
-
-  try {
-    const response = await fetch("/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        topic:
-          `${topic}. Write in a ${tone.toLowerCase()} tone ` +
-          `for ${audience.toLowerCase()}. ` +
-          `Use a ${length.toLowerCase()} blog length.`
-      })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.detail || "Generation failed.");
+      .settings-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
-    if (!data.blog) {
-      throw new Error("The AI did not return a blog.");
+    @media (max-width: 800px) {
+      .app {
+        display: block;
+      }
+
+      .sidebar {
+        width: 100%;
+        padding: 15px;
+        gap: 15px;
+      }
+
+      .nav {
+        display: flex;
+        overflow-x: auto;
+      }
+
+      .nav button {
+        white-space: nowrap;
+      }
+
+      .sidebar-bottom {
+        display: none;
+      }
+
+      .topbar {
+        padding: 18px;
+      }
+
+      .content {
+        padding: 16px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .right {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        padding: 18px;
+      }
     }
 
-    showBlog(data.blog);
-    saveToHistory(topic, data.blog);
+    @media (max-width: 480px) {
+      .stats, .settings-grid {
+        grid-template-columns: 1fr;
+      }
 
-    status.textContent = "🎉 Your blog is ready!";
-    document.getElementById("outputSection")
-      .scrollIntoView({ behavior: "smooth" });
+      .topbar h1 {
+        font-size: 18px;
+      }
 
-  } catch (error) {
-    status.textContent = "Error: " + error.message;
-  } finally {
-    button.disabled = false;
-    button.textContent = "✨ Generate My Blog";
-  }
-}
+      .topbar p {
+        display: none;
+      }
+    }
 
-async function copyBlog() {
-  if (!blogText) return;
+    @media print {
+      .sidebar, .topbar, .stats, .right,
+      .generator-panel, .preview-tools, .footer {
+        display: none !important;
+      }
 
-  try {
-    await navigator.clipboard.writeText(blogText);
-    document.getElementById("status").textContent =
-      "📋 Blog copied to clipboard!";
-  } catch {
-    alert("Copy failed. Please select the article manually.");
-  }
-}
+      body, .main, .content, .panel {
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+        border: 0 !important;
+      }
 
-function downloadBlog() {
-  if (!blogText) return;
+      .workspace {
+        display: block;
+      }
 
-  const blob = new Blob([blogText], {
-    type: "text/plain;charset=utf-8"
-  });
+      .article {
+        white-space: pre-wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
 
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
+    <aside class="sidebar">
+      <div class="logo">
+        ✦ BlogBloom
+        <small>AI Writing Studio</small>
+      </div>
 
-  link.href = url;
-  link.download = "blogbloom-article.txt";
-  link.click();
+      <nav class="nav">
+        <button class="active" onclick="showHome()">⌂ &nbsp; Dashboard</button>
+        <button onclick="focusGenerator()">✎ &nbsp; Generate Blog</button>
+        <button onclick="focusLibrary()">▤ &nbsp; My Library</button>
+        <button onclick="showTemplates()">▦ &nbsp; Templates</button>
+        <button onclick="toggleTheme()">⚙ &nbsp; Appearance</button>
+      </nav>
 
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
+      <div class="sidebar-bottom">
+        <strong>✦ Powered by Gemini</strong>
+        <p>Plan, write, refine, and publish with an AI-powered writing assistant.</p>
+        <span>AI Agents · Python · FastAPI</span>
+      </div>
+    </aside>
 
-function savePDF() {
-  if (!blogText) {
-    alert("Generate a blog first!");
-    return;
-  }
+    <div class="main">
 
-  window.print();
-}
+      <header class="topbar">
+        <div>
+          <h1>Welcome to your writing studio</h1>
+          <p>Turn your ideas into impactful blog posts with AI.</p>
+        </div>
 
-function toggleEdit() {
-  if (!blogText) return;
+        <div class="top-actions">
+          <button class="theme-btn" onclick="toggleTheme()" id="themeButton">
+            ☾ Dark Mode
+          </button>
+          <div class="avatar">B</div>
+        </div>
+      </header>
 
-  const result = document.getElementById("result");
-  const button = document.getElementById("editButton");
+      <div class="content">
 
-  editing = !editing;
-  result.contentEditable = editing ? "true" : "false";
+        <section class="stats">
+          <div class="stat">
+            <div class="stat-icon">▤</div>
+            <div>
+              <strong id="blogCount">0</strong>
+              <span>Blogs Saved</span>
+            </div>
+          </div>
 
-  if (editing) {
-    button.textContent = "💾 Save Edits";
-    result.focus();
-  } else {
-    blogText = result.innerText;
-    updateStats();
-    button.textContent = "✏️ Edit";
-    document.getElementById("status").textContent =
-      "💾 Your edits are saved for this session.";
-  }
-}
+          <div class="stat">
+            <div class="stat-icon">◷</div>
+            <div>
+              <strong id="generationTime">—</strong>
+              <span>Last Generation Time</span>
+            </div>
+          </div>
 
-function toggleDarkMode() {
-  const dark = document.body.classList.toggle("dark");
+          <div class="stat">
+            <div class="stat-icon">✧</div>
+            <div>
+              <strong>5</strong>
+              <span>AI Agent Roles</span>
+            </div>
+          </div>
 
-  document.getElementById("themeButton").textContent =
-    dark ? "☀️ Light Mode" : "🌙 Dark Mode";
+          <div class="stat">
+            <div class="stat-icon">★</div>
+            <div>
+              <strong>Gemini</strong>
+              <span>AI Model Provider</span>
+            </div>
+          </div>
+        </section>
 
-  localStorage.setItem("blogbloom_theme", dark ? "dark" : "light");
-}
+        <div class="workspace">
 
-function getHistory() {
-  try {
-    return JSON.parse(localStorage.getItem(historyKey) || "[]");
-  } catch {
-    return [];
-  }
-}
+          <div class="primary">
 
-function saveToHistory(topic, content) {
-  const history = getHistory();
+            <section class="panel generator-panel" id="generatorPanel">
+              <div class="step-label">AI CONTENT CREATION</div>
+              <h2>✦ Create Your Blog Post</h2>
 
-  history.unshift({
-    topic,
-    content,
-    date: new Date().toLocaleString()
-  });
+              <label for="topic">What would you like to write about?</label>
+              <input
+                id="topic"
+                type="text"
+                placeholder="e.g. Cybersecurity for College Students"
+              >
 
-  try {
-    localStorage.setItem(
-      historyKey,
-      JSON.stringify(history.slice(0, 10))
-    );
-  } catch {
-    document.getElementById("status").textContent =
-      "Blog generated, but browser storage is full.";
-  }
+              <div class="helper">Need inspiration? Choose a popular topic:</div>
 
-  showHistory();
-}
+              <div class="topics">
+                <button class="topic" onclick="setTopic('Cybersecurity for College Students')">Cybersecurity</button>
+                <button class="topic" onclick="setTopic('The Future of AI in Education')">AI & Education</button>
+                <button class="topic" onclick="setTopic('Time Management Tips for Students')">Time Management</button>
+                <button class="topic" onclick="setTopic('Healthy Habits for Busy Students')">Student Wellness</button>
+                <button class="topic" onclick="setTopic('Career Preparation for College Students')">Career Preparation</button>
+                <button class="topic" onclick="setTopic('Sustainable Living on a College Budget')">Sustainability</button>
+              </div>
 
-function showHistory() {
-  const history = getHistory();
-  const search = document.getElementById("historySearch")
-    .value.toLowerCase();
+              <div class="settings-grid">
+                <div>
+                  <label for="tone">Writing Tone</label>
+                  <select id="tone">
+                    <option>Professional</option>
+                    <option>Friendly</option>
+                    <option>Academic</option>
+                    <option>Conversational</option>
+                    <option>Persuasive</option>
+                  </select>
+                </div>
 
-  const list = document.getElementById("historyList");
-  list.replaceChildren();
+                <div>
+                  <label for="length">Blog Length</label>
+                  <select id="length">
+                    <option value="Short">Short</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="Long">Long</option>
+                  </select>
+                </div>
 
-  const matches = history
-    .map((blog, index) => ({ ...blog, index }))
-    .filter(blog => blog.topic.toLowerCase().includes(search));
+                <div>
+                  <label for="audience">Target Audience</label>
+                  <select id="audience">
+                    <option>General Readers</option>
+                    <option>College Students</option>
+                    <option>Professionals</option>
+                    <option>Beginners</option>
+                    <option>Technology Enthusiasts</option>
+                  </select>
+                </div>
 
-  if (!matches.length) {
-    const message = document.createElement("p");
-    message.textContent = "No saved blogs found yet.";
-    list.appendChild(message);
-    return;
-  }
+                <div>
+                  <label for="focus">Content Focus</label>
+                  <select id="focus">
+                    <option>General Information</option>
+                    <option>Practical Tips</option>
+                    <option>Educational Guide</option>
+                    <option>Technology Trends</option>
+                    <option>Career Advice</option>
+                  </select>
+                </div>
+              </div>
 
-  matches.forEach(blog => {
-    const item = document.createElement("div");
-    item.className = "history-item";
+              <button class="primary-btn" id="generateButton" onclick="generateBlog()">
+                ✦ Generate My Blog Post
+              </button>
 
-    const details = document.createElement("div");
-    const title = document.createElement("strong");
-    const date = document.createElement("small");
+              <div class="notice" id="status" role="status" aria-live="polite"></div>
+            </section>
 
-    title.textContent = blog.topic;
-    date.textContent = blog.date;
+            <section class="panel" id="previewPanel">
+              <div class="preview-header">
+                <div>
+                  <div class="step-label">CONTENT PREVIEW</div>
+                  <h2>Generated Blog</h2>
+                </div>
+                <div class="preview-meta" id="wordCount">0 words</div>
+              </div>
 
-    details.append(title, date);
+              <div id="article" class="article">Your generated blog will appear here.
 
-    const actions = document.createElement("div");
-    actions.className = "history-actions";
+Choose a topic, customize your settings, and click Generate My Blog Post to begin.</div>
 
-    const openButton = document.createElement("button");
-    openButton.className = "secondary";
-    openButton.textContent = "📖 Open";
+              <div class="preview-tools">
+                <button class="secondary-btn" onclick="editBlog()">✎ Edit Blog</button>
+                <button class="secondary-btn" onclick="saveCurrentBlog()">▤ Save to Library</button>
+                <button class="secondary-btn" onclick="copyBlog()">⧉ Copy</button>
+                <button class="secondary-btn" onclick="downloadText()">↓ Download TXT</button>
+                <button class="secondary-btn" onclick="printBlog()">▣ Save as PDF</button>
+              </div>
+            </section>
 
-    openButton.onclick = () => {
-      document.getElementById("topic").value = blog.topic;
-      showBlog(blog.content);
-      document.getElementById("outputSection")
-        .scrollIntoView({ behavior: "smooth" });
-    };
+          </div>
 
-    const deleteButton = document.createElement("button");
-    deleteButton.className = "secondary";
-    deleteButton.textContent = "🗑️ Delete";
+          <aside class="right">
 
-    deleteButton.onclick = () => {
-      const history = getHistory();
-      history.splice(blog.index, 1);
-      localStorage.setItem(historyKey, JSON.stringify(history));
-      showHistory();
-    };
+            <section class="panel">
+              <h3>Quick Actions</h3>
 
-    actions.append(openButton, deleteButton);
-    item.append(details, actions);
-    list.appendChild(item);
-  });
-}
+              <div class="action-list">
+                <button onclick="generateBlog()">↻ &nbsp; Regenerate Blog</button>
+                <button onclick="editBlog()">✎ &nbsp; Edit Generated Blog</button>
+                <button onclick="copyBlog()">⧉ &nbsp; Copy to Clipboard</button>
+                <button onclick="downloadText()">↓ &nbsp; Download as TXT</button>
+                <button onclick="printBlog()">▣ &nbsp; Save as PDF</button>
+                <button onclick="clearForm()">× &nbsp; Clear Form</button>
+              </div>
+            </section>
 
-function clearHistory() {
-  if (!confirm("Delete all saved blogs from this browser?")) return;
+            <section class="panel" id="libraryPanel">
+              <h3>My Blog Library</h3>
 
-  localStorage.removeItem(historyKey);
-  showHistory();
-}
+              <input
+                class="library-search"
+                id="librarySearch"
+                type="search"
+                placeholder="Search saved blogs..."
+                oninput="renderLibrary()"
+              >
 
-if (localStorage.getItem("blogbloom_theme") === "dark") {
-  document.body.classList.add("dark");
-  document.getElementById("themeButton").textContent = "☀️ Light Mode";
-}
+              <div id="libraryItems" class="empty">
+                No saved blogs yet.
+              </div>
+            </section>
 
-showHistory();
-</script>
+            <section class="panel">
+              <h3>How It Works</h3>
+              <p class="empty">
+                1. Enter a blog topic.<br>
+                2. Choose your writing preferences.<br>
+                3. AI agents plan and write your content.<br>
+                4. Review, edit, and save your blog.
+              </p>
+            </section>
+
+          </aside>
+
+        </div>
+
+        <div class="footer">
+          BlogBloom AI Writing Studio · Built with Python, FastAPI, Google ADK & Gemini
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "blogbloom_saved_blogs_v1";
+    const THEME_KEY = "blogbloom_theme_v1";
+
+    let currentBlog = "";
+    let currentTopic = "";
+    let isEditing = false;
+    let isGenerating = false;
+
+    function byId(id) {
+      return document.getElementById(id);
+    }
+
+    function notify(message) {
+      const status = byId("status");
+      status.textContent = message;
+      status.classList.add("show");
+    }
+
+    function setTopic(value) {
+      byId("topic").value = value;
+      byId("topic").focus();
+    }
+
+    function getBlogs() {
+      try {
+        const blogs = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return Array.isArray(blogs) ? blogs : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function storeBlogs(blogs) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(blogs));
+        return true;
+      } catch {
+        notify("Browser storage is unavailable. You can still download your blog.");
+        return false;
+      }
+    }
+
+    function updateStats() {
+      byId("blogCount").textContent = getBlogs().length;
+    }
+
+    function updateWordCount() {
+      const words = currentBlog.trim()
+        ? currentBlog.trim().split(/\s+/).length
+        : 0;
+
+      const minutes = Math.max(1, Math.ceil(words / 200));
+
+      byId("wordCount").textContent =
+        words + " words" + (words ? " · " + minutes + " min read" : "");
+    }
+
+    function showBlog(content, topic) {
+      currentBlog = content;
+      currentTopic = topic;
+      isEditing = false;
+
+      const article = byId("article");
+      article.contentEditable = "false";
+      article.textContent = content;
+
+      updateWordCount();
+    }
+
+    async function generateBlog() {
+      if (isGenerating) return;
+
+      if (isEditing) finishEditing();
+
+      const topic = byId("topic").value.trim();
+
+      if (!topic) {
+        notify("Please enter a topic before generating a blog.");
+        byId("topic").focus();
+        return;
+      }
+
+      const tone = byId("tone").value;
+      const length = byId("length").value;
+      const audience = byId("audience").value;
+      const focus = byId("focus").value;
+
+      const lengthGuide = {
+        Short: "approximately 250-400 words",
+        Medium: "approximately 400-700 words",
+        Long: "approximately 800-1200 words"
+      };
+
+      // Your existing FastAPI endpoint accepts { topic }.
+      // The preferences are included in the topic instructions
+      // so no backend changes are required.
+      const instructions =
+        "Write a blog about: " + topic + ". " +
+        "Writing tone: " + tone + ". " +
+        "Target audience: " + audience + ". " +
+        "Content focus: " + focus + ". " +
+        "Desired length: " + lengthGuide[length] + ". " +
+        "Include a clear title, introduction, informative sections, " +
+        "practical takeaways, and conclusion.";
+
+      const button = byId("generateButton");
+      const started = performance.now();
+
+      isGenerating = true;
+      button.disabled = true;
+      button.textContent = "Generating your blog...";
+      notify("Your AI agents are planning and writing. This may take a few minutes.");
+
+      try {
+        const response = await fetch("/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ topic: instructions })
+        });
+
+        let data;
+
+        try {
+          data = await response.json();
+        } catch {
+          throw new Error("The server returned an invalid response.");
+        }
+
+        if (!response.ok) {
+          throw new Error(data.detail || "Blog generation failed.");
+        }
+
+        if (!data.blog || typeof data.blog !== "string") {
+          throw new Error("The server did not return a blog.");
+        }
+
+        showBlog(data.blog, topic);
+
+        const seconds = Math.round((performance.now() - started) / 1000);
+        byId("generationTime").textContent =
+          seconds >= 60
+            ? (seconds / 60).toFixed(1) + " min"
+            : seconds + " sec";
+
+        notify("Your blog is ready! You can edit, save, copy, or download it.");
+
+        byId("previewPanel").scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+      } catch (error) {
+        notify("Generation error: " + error.message);
+      } finally {
+        isGenerating = false;
+        button.disabled = false;
+        button.textContent = "✦ Generate My Blog Post";
+      }
+    }
+
+    function finishEditing() {
+      if (!isEditing) return;
+
+      const article = byId("article");
+      currentBlog = article.innerText;
+      article.contentEditable = "false";
+      isEditing = false;
+
+      updateWordCount();
+      notify("Your edits are ready. Save the blog to keep them.");
+    }
+
+    function editBlog() {
+      if (!currentBlog) {
+        notify("Generate or open a blog before editing.");
+        return;
+      }
+
+      if (isEditing) {
+        finishEditing();
+        return;
+      }
+
+      const article = byId("article");
+      article.contentEditable = "true";
+      isEditing = true;
+      article.focus();
+
+      notify("Editing enabled. Click Edit Blog again when finished.");
+    }
+
+    function saveCurrentBlog() {
+      if (isEditing) finishEditing();
+
+      if (!currentBlog) {
+        notify("There is no blog to save yet.");
+        return;
+      }
+
+      const blogs = getBlogs();
+
+      blogs.unshift({
+        id: Date.now().toString(),
+        topic: currentTopic || "Untitled Blog",
+        content: currentBlog,
+        date: new Date().toLocaleDateString()
+      });
+
+      if (storeBlogs(blogs)) {
+        renderLibrary();
+        notify("Blog saved to your browser library.");
+      }
+    }
+
+    function renderLibrary() {
+      const container = byId("libraryItems");
+      const search = byId("librarySearch").value.toLowerCase();
+      const blogs = getBlogs();
+
+      updateStats();
+      container.replaceChildren();
+
+      const filtered = blogs.filter(blog =>
+        (blog.topic || "").toLowerCase().includes(search)
+      );
+
+      if (!filtered.length) {
+        container.textContent = search
+          ? "No matching blogs found."
+          : "No saved blogs yet. Generate a blog and click Save to Library.";
+        container.className = "empty";
+        return;
+      }
+
+      container.className = "";
+
+      filtered.forEach(blog => {
+        const item = document.createElement("div");
+        item.className = "library-item";
+        item.tabIndex = 0;
+        item.setAttribute("role", "button");
+
+        const title = document.createElement("strong");
+        title.textContent = blog.topic;
+
+        const date = document.createElement("small");
+        date.textContent = "Saved " + blog.date;
+
+        item.append(title, date);
+
+        const openBlog = () => {
+          showBlog(blog.content, blog.topic);
+          byId("topic").value = blog.topic;
+
+          byId("previewPanel").scrollIntoView({
+            behavior: "smooth"
+          });
+
+          notify("Saved blog opened from your library.");
+        };
+
+        item.addEventListener("click", openBlog);
+
+        item.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openBlog();
+          }
+        });
+
+        container.appendChild(item);
+      });
+    }
+
+    async function copyBlog() {
+      if (isEditing) finishEditing();
+
+      if (!currentBlog) {
+        notify("There is no blog to copy.");
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(currentBlog);
+        notify("Blog copied to clipboard.");
+      } catch {
+        notify("Clipboard access is unavailable. Select the blog text and copy it manually.");
+      }
+    }
+
+    function downloadText() {
+      if (isEditing) finishEditing();
+
+      if (!currentBlog) {
+        notify("There is no blog to download.");
+        return;
+      }
+
+      const blob = new Blob([currentBlog], {
+        type: "text/plain;charset=utf-8"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      const filename = (currentTopic || "blog-post")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")
+        .slice(0, 60);
+
+      link.href = url;
+      link.download = (filename || "blog-post") + ".txt";
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(url);
+      notify("Blog downloaded as a text file.");
+    }
+
+    function printBlog() {
+      if (isEditing) finishEditing();
+
+      if (!currentBlog) {
+        notify("There is no blog to export.");
+        return;
+      }
+
+      window.print();
+    }
+
+    function clearForm() {
+      if (isGenerating) {
+        notify("Please wait for the current generation to finish.");
+        return;
+      }
+
+      byId("topic").value = "";
+      byId("tone").value = "Professional";
+      byId("length").value = "Medium";
+      byId("audience").value = "General Readers";
+      byId("focus").value = "General Information";
+
+      showBlog(
+        "Your generated blog will appear here.\n\nChoose a topic and click Generate My Blog Post to begin.",
+        ""
+      );
+
+      currentBlog = "";
+      updateWordCount();
+      notify("Form cleared. Your saved library is unchanged.");
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+
+      const dark = document.body.classList.contains("dark");
+
+      byId("themeButton").textContent =
+        dark ? "☀ Light Mode" : "☾ Dark Mode";
+
+      try {
+        localStorage.setItem(THEME_KEY, dark ? "dark" : "light");
+      } catch {}
+    }
+
+    function focusGenerator() {
+      byId("generatorPanel").scrollIntoView({
+        behavior: "smooth"
+      });
+      byId("topic").focus();
+    }
+
+    function focusLibrary() {
+      byId("libraryPanel").scrollIntoView({
+        behavior: "smooth"
+      });
+      byId("librarySearch").focus();
+    }
+
+    function showHome() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showTemplates() {
+      setTopic("A Practical Guide to Cybersecurity for College Students");
+      byId("tone").value = "Academic";
+      byId("audience").value = "College Students";
+      byId("focus").value = "Educational Guide";
+
+      notify("Educational guide template loaded. You can customize it before generating.");
+    }
+
+    // Restore appearance and saved library on page load.
+    try {
+      if (localStorage.getItem(THEME_KEY) === "dark") {
+        document.body.classList.add("dark");
+        byId("themeButton").textContent = "☀ Light Mode";
+      }
+    } catch {}
+
+    renderLibrary();
+  </script>
 </body>
 </html>
